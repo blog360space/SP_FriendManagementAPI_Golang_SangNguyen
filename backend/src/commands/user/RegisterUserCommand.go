@@ -12,9 +12,9 @@ import (
 
 func RegisterUserCommand (context * gin.Context){
 	var input apimodels.RegisterUserInput
-
+	var err error
 	// 1
-	if error := context.BindJSON(&input) ; error != nil {
+	if err = context.BindJSON(&input) ; err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"msg": "Model isn't null",
@@ -40,16 +40,10 @@ func RegisterUserCommand (context * gin.Context){
 		return
 	}
 
-	// 4
-	var users []domain.UserDomain
-	if _, error := persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Username); error != nil{
-		context.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"msg": "Db Connection refused",
-		})
-		return
-	}
 	// 5
+	var users []domain.UserDomain
+	_, err = persistence.DbContext.Select(users,"select Id, Username From User Where Username=?", input.Username)
+
 	if len(users) > 0 {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
@@ -62,7 +56,7 @@ func RegisterUserCommand (context * gin.Context){
 	persistence.DbContext.Insert(user)
 	output := &apimodels.RegisterUserOutput{user.Id, user.Username}
 	
-	context.JSON(http.StatusOK, gin.H{
+	context.JSON(http.StatusCreated, gin.H{
 		"success" : true,
 		"data": output,
 	})

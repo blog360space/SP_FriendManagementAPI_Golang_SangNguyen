@@ -5,6 +5,6 @@ type RegisterUserInput struct {
 }
 
 type RegisterUserOutput struct {
-	Id int32 `json:"id"`
+	Id int `json:"id"`
 	Username string `json:"username"`
 }

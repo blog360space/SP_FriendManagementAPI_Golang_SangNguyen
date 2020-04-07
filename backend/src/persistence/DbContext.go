@@ -12,9 +12,9 @@ import (
 	"spapp/src/models/domain"
 )
 
-var DbContext = UseMySql()
 
-func UseMySql() *gorp.DbMap {
+
+func UseMySql()  {
 	driver := "mysql"
 	user := os.Getenv("user")
 	pass := os.Getenv("pass")
@@ -24,13 +24,11 @@ func UseMySql() *gorp.DbMap {
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", user, pass, host, port, dbname)
 	db, err := sql.Open(driver, connectionString)
 	checkErr(err, "sql.Open failed")
-	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+	DbContext = gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 
 	// Register Tables
-	dbmap.AddTableWithName(domain.UserDomain{}, "User").SetKeys(true, "ID")
-	dbmap.AddTableWithName(domain.UserFriendDomain{}, "User_Friend").SetKeys(true, "ID")
-
-	return dbmap
+	DbContext.AddTableWithName(domain.UserDomain{}, "User").SetKeys(true, "ID")
+	DbContext.AddTableWithName(domain.UserFriendDomain{}, "User_Friend").SetKeys(true, "ID")
 }
 
 func checkErr(err error, msg string) {

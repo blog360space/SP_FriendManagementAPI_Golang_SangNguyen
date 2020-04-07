@@ -14,7 +14,7 @@ func Bootstrap(){
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	persistence.DbContext = persistence.UseMySql()
+	persistence.UseMySql()
 
 	// Routes
 	server := routers.GetRoutes()

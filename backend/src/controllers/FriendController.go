@@ -10,6 +10,7 @@ func FriendController(router *gin.RouterGroup)  {
 	apis := router.Group("/friend")
 	{
 		apis.POST("/make-friend", friend.MakeFriendCommand)
+		apis.POST("/get-friends", friend.GetFriendsCommand)
 
 	}
 }
