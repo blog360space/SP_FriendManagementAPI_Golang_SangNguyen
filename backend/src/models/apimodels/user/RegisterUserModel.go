@@ -1,10 +1,10 @@
 package user
 
 type RegisterUserInput struct {
-	Username string
+	Username string `json:"username"`
 }
 
 type RegisterUserOutput struct {
-	Id int32
-	Username string
+	Id int32 `json:"id"`
+	Username string `json:"username"`
 }

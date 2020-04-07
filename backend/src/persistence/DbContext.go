@@ -25,7 +25,10 @@ func UseMySql() *gorp.DbMap {
 	db, err := sql.Open(driver, connectionString)
 	checkErr(err, "sql.Open failed")
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+
+	// Register Tables
 	dbmap.AddTableWithName(domain.UserDomain{}, "User").SetKeys(true, "ID")
+	dbmap.AddTableWithName(domain.UserFriendDomain{}, "User_Friend").SetKeys(true, "ID")
 
 	return dbmap
 }

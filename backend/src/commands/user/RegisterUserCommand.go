@@ -6,6 +6,8 @@ import (
 
 	helper "spapp/src/common/helpers"
 	apimodels "spapp/src/models/apimodels/user"
+	"spapp/src/models/domain"
+	"spapp/src/persistence"
 )
 
 func RegisterUserCommand (context * gin.Context){
@@ -39,21 +41,30 @@ func RegisterUserCommand (context * gin.Context){
 	}
 
 	// 4
-	//user := persistence.DbContext.SelectOne("")
-	if !helper.IsEmail(input.Username) {
+	var users []domain.UserDomain
+	if _, error := persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Username); error != nil{
 		context.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"msg": "Username isn't valid email address",
+			"msg": "Db Connection refused",
+		})
+		return
+	}
+	// 5
+	if len(users) > 0 {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"msg": "Username is existed",
 		})
 		return
 	}
 
-
-	//user := &domain.UserDomain{ 0, input.Username }
-	//db.DbContext.Insert(user)
+	user := &domain.UserDomain{ 0, input.Username }
+	persistence.DbContext.Insert(user)
+	output := &apimodels.RegisterUserOutput{user.Id, user.Username}
+	
 	context.JSON(http.StatusOK, gin.H{
-		//"Id": user.ID,
-		//"Username": user.Username,
+		"success" : true,
+		"data": output,
 	})
 	return
 

@@ -1,6 +1,6 @@
 package domain
 
 type UserDomain struct {
-	ID int32
+	Id int32 `db:"ID, primarykey, autoincrement"`
 	Username string
 }
