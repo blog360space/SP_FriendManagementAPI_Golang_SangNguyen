@@ -1,0 +1,25 @@
+﻿version: '3.7'
+
+services:
+  db:
+    container_name: friendmanagement-db
+    restart: always
+    image: mysql:latest
+    volumes:
+      - mysqldbdata:/var/lib/mysql
+      - ./mysqldbinit:/docker-entrypoint-initdb.d
+    ports:
+      - "33061:3306"
+    environment:
+      - MYSQL_DATABASE=friendmanagement
+      - MYSQL_ROOT_PASSWORD=v6V1CKUR0p
+    networks:
+      - friendmanagement-network
+
+volumes:
+  mysqldbdata:
+  mysqldbinit:
+
+networks:
+  friendmanagement-network:
+    driver: bridge
