@@ -67,12 +67,13 @@ func GetFriendsCommand (context * gin.Context){
 		userId := userIds[i]
 		param = param + "," + strconv.Itoa(userId)
 	}
-	var rune = []rune(param)
-	params := string(rune[1:])
-	query := fmt.Sprintf("Select Username From User Where Id In (%s) And Id != %s", params, strconv.Itoa(user.Id))
-
 	var emails []string
-	_,  err = persistence.DbContext.Select(&emails,query)
+	if len(param) > 0 {
+		var rune = []rune(param)
+		params := string(rune[1:])
+		query := fmt.Sprintf("Select Username From User Where Id In (%s) And Id != %s", params, strconv.Itoa(user.Id))
+		_,  err = persistence.DbContext.Select(&emails,query)
+	}
 	var output = &apimodels.GetFriendsOutput{true, []string {}, len(emails), emails}
 	context.JSON(http.StatusOK, output)
 }
