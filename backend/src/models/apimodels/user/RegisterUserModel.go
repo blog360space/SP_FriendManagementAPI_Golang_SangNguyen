@@ -5,6 +5,11 @@ type RegisterUserInput struct {
 }
 
 type RegisterUserOutput struct {
-	Id int `json:"id"`
-	Username string `json:"username"`
+	Success bool `json:"success"`
+	Msgs []string `json:"msgs"`
+	Data struct {
+		Id int `json:"id"`
+		Username string `json:"username"`
+	}
+
 }

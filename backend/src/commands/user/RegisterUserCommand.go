@@ -10,33 +10,43 @@ import (
 	"spapp/src/persistence"
 )
 
+// Register an User docs
+// @Summary Register an User
+// @Description As a user, I need an API to create an user by email address
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param username body string true "Username"
+// @Success 201 {object} user.RegisterUserOutput
+// @Failure 400 {object} user.RegisterUserOutput
+// @Router /user/register-user [post]
 func RegisterUserCommand (context * gin.Context){
 	var input apimodels.RegisterUserInput
 	var err error
 	// 1
 	if err = context.BindJSON(&input) ; err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"msg": "Model isn't null",
-		})
+		var output apimodels.RegisterUserOutput
+		output.Success = false
+		output.Msgs = []string{"Input isn't null"}
+		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 2
 	if len(input.Username) == 0 {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"msg": "Username isn't null or empty",
-		})
+		var output apimodels.RegisterUserOutput
+		output.Success = false
+		output.Msgs = []string{"Username isn't null or empty"}
+		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 3
 	if !helper.IsEmail(input.Username) {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"msg": "Username isn't valid email address",
-		})
+		var output apimodels.RegisterUserOutput
+		output.Success = false
+		output.Msgs = []string{"Username isn't valid email address"}
+		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
@@ -45,21 +55,20 @@ func RegisterUserCommand (context * gin.Context){
 	_, err = persistence.DbContext.Select(users,"select Id, Username From User Where Username=?", input.Username)
 
 	if len(users) > 0 {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"msg": "Username is existed",
-		})
+		var output apimodels.RegisterUserOutput
+		output.Success = false
+		output.Msgs = []string{"Username is existed"}
+		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	user := &domain.UserDomain{ 0, input.Username }
 	persistence.DbContext.Insert(user)
-	output := &apimodels.RegisterUserOutput{user.Id, user.Username}
-	
-	context.JSON(http.StatusCreated, gin.H{
-		"success" : true,
-		"data": output,
-	})
+	var output apimodels.RegisterUserOutput
+	output.Success = true
+	output.Data.Id = user.Id
+	output.Data.Username =  user.Username
+	context.JSON(http.StatusCreated, output)
 	return
 
 }

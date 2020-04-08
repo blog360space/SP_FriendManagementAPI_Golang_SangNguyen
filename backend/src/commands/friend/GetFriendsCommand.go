@@ -13,6 +13,17 @@ import (
 	"spapp/src/persistence"
 )
 
+
+// Get Friends docs
+// @Summary Get Friends
+// @Description As a user, I need an API to retrieve the friends list for an email address.
+// @Tags Friend
+// @Accept  json
+// @Produce  json
+// @Param email body string true "Email"
+// @Success 201 {object} friend.GetFriendsOutput
+// @Failure 400 {object} friend.GetFriendsOutput
+// @Router /friend/get-friends [post]
 func GetFriendsCommand (context * gin.Context){
 	var input apimodels.GetFriendsInput
 	var err error

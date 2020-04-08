@@ -14,7 +14,16 @@ import (
 )
 
 
-
+// Get Common Friends docs
+// @Summary Get Common Friends
+// @Description As a user, I need an API to retrieve the common friends list between two email addresses.
+// @Tags Friend
+// @Accept  json
+// @Produce  json
+// @Param friends body []string true "Emails" collectionFormat(multi)
+// @Success 201 {object} friend.GetCommonFriendsOutput
+// @Failure 400 {object} friend.GetCommonFriendsOutput
+// @Router /friend/get-common-friends [post]
 func GetCommonFriendsCommand(context *gin.Context) {
 	var input apimodels.GetCommonFriendsInput
 	var err error

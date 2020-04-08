@@ -13,6 +13,17 @@ import (
 	"spapp/src/persistence"
 )
 
+// Subscribe an User docs
+// @Summary Subscribe an User
+// @Description As a user, I need an API to subscribe to updates from an email address.
+// @Tags Friend
+// @Accept  json
+// @Produce  json
+// @Param requestor body string true "Email"
+// @Param target body string true "Email"
+// @Success 201 {object} friend.SubscribeUserOutput
+// @Failure 400 {object} friend.SubscribeUserOutput
+// @Router /friend/subscribe-user [post]
 func SubscribeUserCommand(context *gin.Context)  {
 	var input apimodels.SubscribeUserInput
 	var err error

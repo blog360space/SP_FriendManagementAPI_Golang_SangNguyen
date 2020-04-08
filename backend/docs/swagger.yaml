@@ -1,7 +1,216 @@
+definitions:
+  friend.BlockUserOutput:
+    properties:
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  friend.GetCommonFriendsOutput:
+    properties:
+      count:
+        type: integer
+      friends:
+        items:
+          type: string
+        type: array
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  friend.GetFriendsOutput:
+    properties:
+      count:
+        type: integer
+      friends:
+        items:
+          type: string
+        type: array
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  friend.GetRecipientsOutput:
+    properties:
+      msgs:
+        items:
+          type: string
+        type: array
+      recipients:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  friend.MakeFriendOutput:
+    properties:
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  friend.SubscribeUserOutput:
+    properties:
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  user.RegisterUserOutput:
+    properties:
+      data:
+        properties:
+          id:
+            type: integer
+          username:
+            type: string
+        type: object
+      msgs:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
 info:
   contact: {}
   license: {}
 paths:
+  /friend/block-user:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to block updates from an email address.
+      parameters:
+      - description: Email
+        in: body
+        name: requestor
+        required: true
+        schema:
+          type: string
+      - description: Email
+        in: body
+        name: target
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.BlockUserOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.BlockUserOutput'
+      summary: Block an User
+      tags:
+      - Friend
+  /friend/get-common-friends:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to retrieve the common friends list between
+        two email addresses.
+      parameters:
+      - description: Emails
+        format: multi
+        in: body
+        name: friends
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.GetCommonFriendsOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.GetCommonFriendsOutput'
+      summary: Get Common Friends
+      tags:
+      - Friend
+  /friend/get-friends:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to retrieve the friends list for an email
+        address.
+      parameters:
+      - description: Email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.GetFriendsOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.GetFriendsOutput'
+      summary: Get Friends
+      tags:
+      - Friend
+  /friend/get-recipients:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to retrieve all email addresses that can
+        receive updates from an email address.
+      parameters:
+      - description: Email
+        in: body
+        name: sender
+        required: true
+        schema:
+          type: string
+      - description: Text
+        in: body
+        name: text
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.GetRecipientsOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.GetRecipientsOutput'
+      summary: Get Recipients
+      tags:
+      - Friend
   /friend/make-friend:
     post:
       consumes:
@@ -20,5 +229,75 @@ paths:
           type: array
       produces:
       - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.MakeFriendOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.MakeFriendOutput'
       summary: Make Friend
+      tags:
+      - Friend
+  /friend/subscribe-user:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to subscribe to updates from an email
+        address.
+      parameters:
+      - description: Email
+        in: body
+        name: requestor
+        required: true
+        schema:
+          type: string
+      - description: Email
+        in: body
+        name: target
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/friend.SubscribeUserOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/friend.SubscribeUserOutput'
+      summary: Subscribe an User
+      tags:
+      - Friend
+  /user/register-user:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to create an user by email address
+      parameters:
+      - description: Username
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.RegisterUserOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.RegisterUserOutput'
+      summary: Register an User
+      tags:
+      - User
 swagger: "2.0"

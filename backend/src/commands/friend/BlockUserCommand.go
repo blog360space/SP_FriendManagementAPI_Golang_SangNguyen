@@ -13,40 +13,51 @@ import (
 
 )
 
+// Block an User docs
+// @Summary Block an User
+// @Description As a user, I need an API to block updates from an email address.
+// @Tags Friend
+// @Accept  json
+// @Produce  json
+// @Param requestor body string true "Email"
+// @Param target body string true "Email"
+// @Success 201 {object} friend.BlockUserOutput
+// @Failure 400 {object} friend.BlockUserOutput
+// @Router /friend/block-user [post]
 func BlockUserCommand(context *gin.Context)  {
-	var input apimodels.SubscribeUserInput
+	var input apimodels.BlockUserInput
 	var err error
 
 	// 1
 	if err = context.BindJSON(&input) ; err != nil {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Input isn't null"}}
+		var output = &apimodels.BlockUserOutput{false, []string {"Input isn't null"}}
 		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 2
 	if len(input.Requestor) == 0 || len(input.Target) == 0 {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Input isn't valid"} }
+		var output = &apimodels.BlockUserOutput{false, []string {"Input isn't valid"} }
 		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 3
 	if !helper.IsEmail(input.Requestor) {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Requestor isn't valid email address"} }
+		var output = &apimodels.BlockUserOutput{false, []string {"Requestor isn't valid email address"} }
 		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 4
 	if !helper.IsEmail(input.Target) {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Target isn't valid email address"} }
+		var output = &apimodels.BlockUserOutput{false, []string {"Target isn't valid email address"} }
 		context.JSON(http.StatusBadRequest, output)
 		return
 	}
 
 	// 5
-	var output = &apimodels.SubscribeUserOutput{true, []string {}}
+	var output = &apimodels.BlockUserOutput{true, []string {}}
 	var users []domain.UserDomain
 	_, err = persistence.DbContext.Select(&users,"Select Id, Username From User Where Username=? Or Username=?", input.Requestor, input.Target)
 

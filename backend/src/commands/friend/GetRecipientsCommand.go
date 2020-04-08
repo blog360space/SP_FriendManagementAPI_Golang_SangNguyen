@@ -12,6 +12,17 @@ import (
 	"strconv"
 )
 
+// Get Recipients docs
+// @Summary Get Recipients
+// @Description As a user, I need an API to retrieve all email addresses that can receive updates from an email address.
+// @Tags Friend
+// @Accept  json
+// @Produce  json
+// @Param sender body string true "Email"
+// @Param text body string true "Text"
+// @Success 201 {object} friend.GetRecipientsOutput
+// @Failure 400 {object} friend.GetRecipientsOutput
+// @Router /friend/get-recipients [post]
 func GetRecipientsCommand(context *gin.Context) {
 	var input apimodels.GetRecipientsInput
 	var err error

@@ -14,9 +14,12 @@ import (
 // Make Friend docs
 // @Summary Make Friend
 // @Description As a user, I need an API to create a friend connection between two email addresses
+// @Tags Friend
 // @Accept  json
 // @Produce  json
 // @Param friends body []string true "Emails" collectionFormat(multi)
+// @Success 201 {object} friend.MakeFriendOutput
+// @Failure 400 {object} friend.MakeFriendOutput
 // @Router /friend/make-friend [post]
 func MakeFriendCommand (context * gin.Context){
 	var input apimodels.MakeFriendInput
@@ -87,5 +90,5 @@ func MakeFriendCommand (context * gin.Context){
 	userfriend := &domain.UserFriendDomain{0, users[0].Id, users[1].Id}
 	persistence.DbContext.Insert(userfriend)
 
-	context.JSON(http.StatusOK, output)
+	context.JSON(http.StatusCreated, output)
 }
