@@ -29,6 +29,7 @@ func UseMySql()  {
 	// Register Tables
 	DbContext.AddTableWithName(domain.UserDomain{}, "User").SetKeys(true, "ID")
 	DbContext.AddTableWithName(domain.UserFriendDomain{}, "User_Friend").SetKeys(true, "ID")
+	DbContext.AddTableWithName(domain.SubscribeUserDomain{}, "Subscribe_User").SetKeys(true, "ID")
 }
 
 func checkErr(err error, msg string) {

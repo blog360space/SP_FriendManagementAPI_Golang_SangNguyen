@@ -1,0 +1,36 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {},
+        "license": {}
+    },
+    "paths": {
+        "/friend/make-friend": {
+            "post": {
+                "description": "As a user, I need an API to create a friend connection between two email addresses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Make Friend",
+                "parameters": [
+                    {
+                        "format": "multi",
+                        "description": "Emails",
+                        "name": "friends",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

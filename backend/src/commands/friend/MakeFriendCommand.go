@@ -11,7 +11,13 @@ import (
 	"spapp/src/models/domain"
 	"spapp/src/persistence"
 )
-
+// Make Friend docs
+// @Summary Make Friend
+// @Description As a user, I need an API to create a friend connection between two email addresses
+// @Accept  json
+// @Produce  json
+// @Param friends body []string true "Emails" collectionFormat(multi)
+// @Router /friend/make-friend [post]
 func MakeFriendCommand (context * gin.Context){
 	var input apimodels.MakeFriendInput
 	var err error

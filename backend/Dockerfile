@@ -12,6 +12,7 @@ LABEL maintainer="Sang Nguyen <sang.nguyenv@s3corp.com.vn>"
 
 WORKDIR /app
 COPY env/env.env ./env/env.env
+COPY docs ./docs/
 COPY go.mod .
 COPY go.sum .
 
@@ -30,7 +31,8 @@ WORKDIR /root
 
 # Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
 COPY --from=builder /app/main .
-COPY --from=builder /app/env/env.env ./env/env.env       
+COPY --from=builder /app/env/env.env ./env/env.env
+COPY --from=builder /app/docs ./docs/
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

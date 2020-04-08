@@ -1,0 +1,24 @@
+info:
+  contact: {}
+  license: {}
+paths:
+  /friend/make-friend:
+    post:
+      consumes:
+      - application/json
+      description: As a user, I need an API to create a friend connection between
+        two email addresses
+      parameters:
+      - description: Emails
+        format: multi
+        in: body
+        name: friends
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      summary: Make Friend
+swagger: "2.0"
