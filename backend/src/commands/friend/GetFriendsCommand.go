@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"spapp/src/common/constants"
 	"strconv"
 
 	apimodels "spapp/src/models/apimodels/friend"
@@ -58,17 +59,40 @@ func GetFriendsCommand (context * gin.Context){
 		context.JSON(http.StatusBadRequest, output)
 		return
 	}
+	// Return Data
+	var currentUser = users[0]
 
-	// TODO: Block User
+	// Blocked Users
+	var blockedIds []int
+	_,  err = persistence.DbContext.Select(&blockedIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", currentUser.Id, constants.Blocked)
+	var blockUserIdsParam = ""
+	if len(blockedIds) > 0 {
+		for i := range blockedIds {
+			blockedId := blockedIds[i]
+			blockUserIdsParam = blockUserIdsParam + "," + strconv.Itoa(blockedId)
+		}
+		var rune = []rune(blockUserIdsParam)
+		blockUserIdsParam = string(rune[1:])
+	}
 
-	// Get Friends
-	var user = users[0]
-	var fromUserIds []int
-	_, err = persistence.DbContext.Select(&fromUserIds,"Select FromUserID From User_Friend Where ToUserID=?", user.Id)
-	var toUserIds []int
-	_, err = persistence.DbContext.Select(&toUserIds,"Select ToUserID From User_Friend Where FromUserID=?", user.Id)
+	// toUserIds
+	var query = "Select ToUserID From User_Friend Where FromUserID=?"
+	if len(blockUserIdsParam) > 0 {
+		query = fmt.Sprintf("%s And ToUserID Not In (%s)", query, blockUserIdsParam)
+	}
+	var toFriendUserIds []int
+	_,  err = persistence.DbContext.Select(&toFriendUserIds, query, currentUser.Id)
 
-	var userIds = append(fromUserIds, toUserIds...)
+	// fromUserIds
+	query = "Select FromUserID From User_Friend Where ToUserID=?"
+	if len(blockUserIdsParam) > 0 {
+		query = fmt.Sprintf("%s And FromUserID Not In (%s)", query, blockUserIdsParam)
+	}
+	var fromFriendUserIds []int
+	_,  err = persistence.DbContext.Select(&fromFriendUserIds, query, currentUser.Id)
+
+
+	var userIds = append(toFriendUserIds, fromFriendUserIds...)
 
 	// Build Query
 	var param = ""
@@ -80,7 +104,7 @@ func GetFriendsCommand (context * gin.Context){
 	if len(param) > 0 {
 		var rune = []rune(param)
 		params := string(rune[1:])
-		query := fmt.Sprintf("Select Username From User Where Id In (%s) And Id != %s", params, strconv.Itoa(user.Id))
+		query = fmt.Sprintf("Select Username From User Where Id In (%s) And Id != %s", params, strconv.Itoa(currentUser.Id))
 		_,  err = persistence.DbContext.Select(&emails,query)
 	}
 	var output = &apimodels.GetFriendsOutput{true, []string {}, len(emails), emails}
