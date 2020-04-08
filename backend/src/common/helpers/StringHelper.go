@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"reflect"
 	"regexp"
 )
 
@@ -15,26 +14,6 @@ func IsEmail(input string) bool {
 		},
 		Catch: func(e Exception) {
 			output = false
-		},
-	}.Do()
-	return output
-}
-
-func ItemExists(arraySrc []string, item string) bool {
-	var output = false
-	Block{
-		Try: func() {
-			arr := reflect.ValueOf(arraySrc)
-
-			for i := 0; i < arr.Len(); i++ {
-				if arr.Index(i).Interface() == item {
-					output = true
-				}
-			}
-
-		},
-		Catch: func(e Exception) {
-
 		},
 	}.Do()
 	return output

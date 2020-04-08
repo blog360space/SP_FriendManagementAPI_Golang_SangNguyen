@@ -41,8 +41,6 @@ func GetFriendsCommand (context * gin.Context){
 	// 4
 	var users []domain.UserDomain
 	_, err = persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Email)
-
-	// 5
 	if len(users) == 0 {
 		var msg = fmt.Sprintf("%s isn't registered", input.Email)
 		var output = &apimodels.GetFriendsOutput{false,  []string {msg},0, []string{}}

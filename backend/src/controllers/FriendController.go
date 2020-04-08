@@ -14,5 +14,9 @@ func FriendController(router *gin.RouterGroup)  {
 		apis.POST("/get-common-friends", friend.GetCommonFriendsCommand)
 
 		apis.POST("/subscribe-user", friend.SubscribeUserCommand)
+		apis.POST("/block-user", friend.BlockUserCommand)
+		apis.POST("/get-recipients", friend.GetRecipientsCommand)
+
+
 	}
 }
