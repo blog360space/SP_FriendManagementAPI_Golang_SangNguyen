@@ -16,7 +16,7 @@ import (
 // @Tags User
 // @Accept  json
 // @Produce  json
-// @Param username body string true "Username"
+// @Param input body user.RegisterUserInput true "Email"
 // @Success 201 {object} user.RegisterUserOutput
 // @Failure 400 {object} user.RegisterUserOutput
 // @Router /user/register-user [post]

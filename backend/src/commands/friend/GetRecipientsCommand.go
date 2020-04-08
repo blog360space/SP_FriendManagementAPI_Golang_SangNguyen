@@ -18,8 +18,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param sender body string true "Email"
-// @Param text body string true "Text"
+// @Param input body friend.GetRecipientsInput true "Input"
 // @Success 201 {object} friend.GetRecipientsOutput
 // @Failure 400 {object} friend.GetRecipientsOutput
 // @Router /friend/get-recipients [post]

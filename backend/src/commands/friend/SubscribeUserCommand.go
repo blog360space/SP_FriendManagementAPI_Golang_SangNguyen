@@ -19,8 +19,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param requestor body string true "Email"
-// @Param target body string true "Email"
+// @Param input body friend.SubscribeUserInput true "Input"
 // @Success 201 {object} friend.SubscribeUserOutput
 // @Failure 400 {object} friend.SubscribeUserOutput
 // @Router /friend/subscribe-user [post]

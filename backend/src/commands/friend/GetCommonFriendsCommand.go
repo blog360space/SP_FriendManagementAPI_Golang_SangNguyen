@@ -21,7 +21,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param friends body []string true "Emails" collectionFormat(multi)
+// @Param input body friend.GetCommonFriendsInput true "Input"
 // @Success 201 {object} friend.GetCommonFriendsOutput
 // @Failure 400 {object} friend.GetCommonFriendsOutput
 // @Router /friend/get-common-friends [post]

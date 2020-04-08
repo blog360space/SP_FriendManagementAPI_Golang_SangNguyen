@@ -21,7 +21,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param email body string true "Email"
+// @Param input body friend.GetFriendsInput true "Input"
 // @Success 201 {object} friend.GetFriendsOutput
 // @Failure 400 {object} friend.GetFriendsOutput
 // @Router /friend/get-friends [post]

@@ -10,6 +10,6 @@ type RegisterUserOutput struct {
 	Data struct {
 		Id int `json:"id"`
 		Username string `json:"username"`
-	}
+	} `json:"data"`
 
 }

@@ -17,7 +17,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param friends body []string true "Emails" collectionFormat(multi)
+// @Param input body friend.MakeFriendInput true "Input"
 // @Success 201 {object} friend.MakeFriendOutput
 // @Failure 400 {object} friend.MakeFriendOutput
 // @Router /friend/make-friend [post]

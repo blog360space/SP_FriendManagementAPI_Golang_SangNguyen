@@ -20,21 +20,12 @@
                 "summary": "Block an User",
                 "parameters": [
                     {
-                        "description": "Email",
-                        "name": "requestor",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Email",
-                        "name": "target",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/friend.BlockUserInput"
                         }
                     }
                 ],
@@ -69,16 +60,12 @@
                 "summary": "Get Common Friends",
                 "parameters": [
                     {
-                        "format": "multi",
-                        "description": "Emails",
-                        "name": "friends",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/friend.GetCommonFriendsInput"
                         }
                     }
                 ],
@@ -113,12 +100,12 @@
                 "summary": "Get Friends",
                 "parameters": [
                     {
-                        "description": "Email",
-                        "name": "email",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/friend.GetFriendsInput"
                         }
                     }
                 ],
@@ -153,21 +140,12 @@
                 "summary": "Get Recipients",
                 "parameters": [
                     {
-                        "description": "Email",
-                        "name": "sender",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Text",
-                        "name": "text",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/friend.GetRecipientsInput"
                         }
                     }
                 ],
@@ -202,16 +180,12 @@
                 "summary": "Make Friend",
                 "parameters": [
                     {
-                        "format": "multi",
-                        "description": "Emails",
-                        "name": "friends",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/friend.MakeFriendInput"
                         }
                     }
                 ],
@@ -246,21 +220,12 @@
                 "summary": "Subscribe an User",
                 "parameters": [
                     {
-                        "description": "Email",
-                        "name": "requestor",
+                        "description": "Input",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Email",
-                        "name": "target",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/friend.SubscribeUserInput"
                         }
                     }
                 ],
@@ -295,12 +260,12 @@
                 "summary": "Register an User",
                 "parameters": [
                     {
-                        "description": "Username",
-                        "name": "username",
+                        "description": "Email",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/user.RegisterUserInput"
                         }
                     }
                 ],
@@ -322,6 +287,17 @@
         }
     },
     "definitions": {
+        "friend.BlockUserInput": {
+            "type": "object",
+            "properties": {
+                "requestor": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                }
+            }
+        },
         "friend.BlockUserOutput": {
             "type": "object",
             "properties": {
@@ -333,6 +309,17 @@
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "friend.GetCommonFriendsInput": {
+            "type": "object",
+            "properties": {
+                "friends": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -359,6 +346,14 @@
                 }
             }
         },
+        "friend.GetFriendsInput": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "friend.GetFriendsOutput": {
             "type": "object",
             "properties": {
@@ -382,6 +377,17 @@
                 }
             }
         },
+        "friend.GetRecipientsInput": {
+            "type": "object",
+            "properties": {
+                "sender": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
         "friend.GetRecipientsOutput": {
             "type": "object",
             "properties": {
@@ -402,6 +408,17 @@
                 }
             }
         },
+        "friend.MakeFriendInput": {
+            "type": "object",
+            "properties": {
+                "friends": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "friend.MakeFriendOutput": {
             "type": "object",
             "properties": {
@@ -416,6 +433,17 @@
                 }
             }
         },
+        "friend.SubscribeUserInput": {
+            "type": "object",
+            "properties": {
+                "requestor": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                }
+            }
+        },
         "friend.SubscribeUserOutput": {
             "type": "object",
             "properties": {
@@ -427,6 +455,14 @@
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "user.RegisterUserInput": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
                 }
             }
         },

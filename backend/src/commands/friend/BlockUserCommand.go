@@ -19,8 +19,7 @@ import (
 // @Tags Friend
 // @Accept  json
 // @Produce  json
-// @Param requestor body string true "Email"
-// @Param target body string true "Email"
+// @Param input body friend.BlockUserInput true "Input"
 // @Success 201 {object} friend.BlockUserOutput
 // @Failure 400 {object} friend.BlockUserOutput
 // @Router /friend/block-user [post]

@@ -1,4 +1,11 @@
 definitions:
+  friend.BlockUserInput:
+    properties:
+      requestor:
+        type: string
+      target:
+        type: string
+    type: object
   friend.BlockUserOutput:
     properties:
       msgs:
@@ -7,6 +14,13 @@ definitions:
         type: array
       success:
         type: boolean
+    type: object
+  friend.GetCommonFriendsInput:
+    properties:
+      friends:
+        items:
+          type: string
+        type: array
     type: object
   friend.GetCommonFriendsOutput:
     properties:
@@ -23,6 +37,11 @@ definitions:
       success:
         type: boolean
     type: object
+  friend.GetFriendsInput:
+    properties:
+      email:
+        type: string
+    type: object
   friend.GetFriendsOutput:
     properties:
       count:
@@ -38,6 +57,13 @@ definitions:
       success:
         type: boolean
     type: object
+  friend.GetRecipientsInput:
+    properties:
+      sender:
+        type: string
+      text:
+        type: string
+    type: object
   friend.GetRecipientsOutput:
     properties:
       msgs:
@@ -51,6 +77,13 @@ definitions:
       success:
         type: boolean
     type: object
+  friend.MakeFriendInput:
+    properties:
+      friends:
+        items:
+          type: string
+        type: array
+    type: object
   friend.MakeFriendOutput:
     properties:
       msgs:
@@ -60,6 +93,13 @@ definitions:
       success:
         type: boolean
     type: object
+  friend.SubscribeUserInput:
+    properties:
+      requestor:
+        type: string
+      target:
+        type: string
+    type: object
   friend.SubscribeUserOutput:
     properties:
       msgs:
@@ -68,6 +108,11 @@ definitions:
         type: array
       success:
         type: boolean
+    type: object
+  user.RegisterUserInput:
+    properties:
+      username:
+        type: string
     type: object
   user.RegisterUserOutput:
     properties:
@@ -95,18 +140,12 @@ paths:
       - application/json
       description: As a user, I need an API to block updates from an email address.
       parameters:
-      - description: Email
+      - description: Input
         in: body
-        name: requestor
+        name: input
         required: true
         schema:
-          type: string
-      - description: Email
-        in: body
-        name: target
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/friend.BlockUserInput'
       produces:
       - application/json
       responses:
@@ -128,15 +167,12 @@ paths:
       description: As a user, I need an API to retrieve the common friends list between
         two email addresses.
       parameters:
-      - description: Emails
-        format: multi
+      - description: Input
         in: body
-        name: friends
+        name: input
         required: true
         schema:
-          items:
-            type: string
-          type: array
+          $ref: '#/definitions/friend.GetCommonFriendsInput'
       produces:
       - application/json
       responses:
@@ -158,12 +194,12 @@ paths:
       description: As a user, I need an API to retrieve the friends list for an email
         address.
       parameters:
-      - description: Email
+      - description: Input
         in: body
-        name: email
+        name: input
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/friend.GetFriendsInput'
       produces:
       - application/json
       responses:
@@ -185,18 +221,12 @@ paths:
       description: As a user, I need an API to retrieve all email addresses that can
         receive updates from an email address.
       parameters:
-      - description: Email
+      - description: Input
         in: body
-        name: sender
+        name: input
         required: true
         schema:
-          type: string
-      - description: Text
-        in: body
-        name: text
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/friend.GetRecipientsInput'
       produces:
       - application/json
       responses:
@@ -218,15 +248,12 @@ paths:
       description: As a user, I need an API to create a friend connection between
         two email addresses
       parameters:
-      - description: Emails
-        format: multi
+      - description: Input
         in: body
-        name: friends
+        name: input
         required: true
         schema:
-          items:
-            type: string
-          type: array
+          $ref: '#/definitions/friend.MakeFriendInput'
       produces:
       - application/json
       responses:
@@ -248,18 +275,12 @@ paths:
       description: As a user, I need an API to subscribe to updates from an email
         address.
       parameters:
-      - description: Email
+      - description: Input
         in: body
-        name: requestor
+        name: input
         required: true
         schema:
-          type: string
-      - description: Email
-        in: body
-        name: target
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/friend.SubscribeUserInput'
       produces:
       - application/json
       responses:
@@ -280,12 +301,12 @@ paths:
       - application/json
       description: As a user, I need an API to create an user by email address
       parameters:
-      - description: Username
+      - description: Email
         in: body
-        name: username
+        name: input
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/user.RegisterUserInput'
       produces:
       - application/json
       responses:
