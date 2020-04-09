@@ -14,31 +14,21 @@ import (
 
 func BlockUserCommand(input friendmodels.BlockUserInput) friendmodels.BlockUserOutput {
 
-
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.BlockUserOutput{apimodels.ApiResult{false, []string {"Input isn't null"}}}
-		return output
-	}
-
 	// 2
 	if len(input.Requestor) == 0 || len(input.Target) == 0 {
 		var output = friendmodels.BlockUserOutput{apimodels.ApiResult{false, []string {"Input isn't valid"} }}
-		// context.JSON(http.StatusBadRequest, output)
 		return output
 	}
 
 	// 3
 	if !helper.IsEmail(input.Requestor) {
 		var output = friendmodels.BlockUserOutput{apimodels.ApiResult{false, []string {"Requestor isn't valid email address"} }}
-		// context.JSON(http.StatusBadRequest, output)
 		return output
 	}
 
 	// 4
 	if !helper.IsEmail(input.Target) {
 		var output = friendmodels.BlockUserOutput{apimodels.ApiResult{false, []string {"Target isn't valid email address"} }}
-		// context.JSON(http.StatusBadRequest, output)
 		return output
 	}
 
@@ -47,7 +37,6 @@ func BlockUserCommand(input friendmodels.BlockUserInput) friendmodels.BlockUserO
 		var output = friendmodels.BlockUserOutput{apimodels.ApiResult{false, []string {"Requestor and Target are the same"}}}
 		return output
 	}
-
 	// 6
 	var output = friendmodels.BlockUserOutput{apimodels.ApiResult{true, []string {}}}
 	var users []domain.UserDomain
@@ -62,18 +51,13 @@ func BlockUserCommand(input friendmodels.BlockUserInput) friendmodels.BlockUserO
 			for j := range users {
 				if values[i] == users[j].Username {
 					flag = false
-				}
-			}
+				}}
 			if flag {
 				var msg = fmt.Sprintf("%s isn't registered", values[i])
 				output.Success = false
 				output.Msgs = helper.AddItemToArray(output.Msgs, msg)
-			}
-		}
-		// context.JSON(http.StatusBadRequest, output)
-		return output
-	}
-
+			}}
+		return output}
 	// 7
 	index := helper.ArrayIndex(len(users), func(i int) bool {
 		return users[i].Username == input.Requestor
@@ -95,19 +79,14 @@ func BlockUserCommand(input friendmodels.BlockUserInput) friendmodels.BlockUserO
 			output.Success = false
 			output.Msgs = helper.AddItemToArray(output.Msgs, msg)
 
-			// context.JSON(http.StatusBadRequest, output)
 			return output
 		}
-
 		// Update
 		subscribeUser.Status = constants.Blocked
 		persistence.DbContext.Update(subscribeUser)
-		// context.JSON(http.StatusOK, output)
 	} else {
 		// Insert
 		subscribeUser:= &domain.SubscribeUserDomain{0, requestor.Id, target.Id, constants.Blocked}
 		persistence.DbContext.Insert(subscribeUser)
-		//context.JSON(http.StatusOK, output)
 	}
-	return output
-}
+	return output}

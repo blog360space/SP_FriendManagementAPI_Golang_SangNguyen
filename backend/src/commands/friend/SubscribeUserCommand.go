@@ -14,12 +14,6 @@ import (
 
 func SubscribeUserCommand(input friendmodels.SubscribeUserInput)  friendmodels.SubscribeUserOutput {
 
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Input isn't null"}}}
-		return output
-	}
-
 	// 2
 	if len(input.Requestor) == 0 || len(input.Target) == 0 {
 		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Input isn't valid"}}}
