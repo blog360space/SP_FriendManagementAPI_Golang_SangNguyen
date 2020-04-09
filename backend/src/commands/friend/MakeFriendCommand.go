@@ -2,6 +2,7 @@ package friend
 
 import (
 	"fmt"
+	"spapp/src/common/constants"
 	"spapp/src/models/apimodels"
 
 	helper "spapp/src/common/helpers"
@@ -43,7 +44,7 @@ func MakeFriendCommand (input friendmodels.MakeFriendInput) friendmodels.MakeFri
 
 	// 5
 	var users []domain.UserDomain
-	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
+	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?) Order By Id", input.Friends[0], input.Friends[1])
 	for i := range input.Friends {
 		var flag = true
 		for j := range users {
@@ -72,8 +73,18 @@ func MakeFriendCommand (input friendmodels.MakeFriendInput) friendmodels.MakeFri
 		return output
 	}
 
+	// 7
+	var blockUsers []domain.SubscribeUserDomain
+	_, _ = persistence.DbContext.Select(&blockUsers, "Select Id, Requestor, Target, Status From Subscribe_User Where Requestor=? And Target=? And Status=?", users[0].Id, users[1].Id, constants.Blocked)
+
+	if len(blockUsers) > 0 {
+		var msg = fmt.Sprintf("%s blocked %s", users[0].Username, users[1].Username)
+		output.Success = false
+		output.Msgs = helper.AddItemToArray(output.Msgs, msg)
+		return output
+	}
+
 	userfriend := &domain.UserFriendDomain{0, users[0].Id, users[1].Id}
 	persistence.DbContext.Insert(userfriend)
-
 	return output
 }

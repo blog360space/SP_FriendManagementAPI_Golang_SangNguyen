@@ -12,15 +12,6 @@ import (
 )
 
 func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.GetRecipientsOutput {
-
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.GetRecipientsOutput{
-			apimodels.ApiResult{false, []string {"Input isn't null"}},
-			[]string{}}
-		return output
-	}
-
 	// 2
 	if len(input.Sender) == 0 {
 		var output = friendmodels.GetRecipientsOutput{
@@ -28,7 +19,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 			[]string{}}
 		return output
 	}
-
 	// 3
 	if !helper.IsEmail(input.Sender) {
 		var output = friendmodels.GetRecipientsOutput{
@@ -36,7 +26,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 			[]string{}}
 		return output
 	}
-
 	// 4
 	if len(input.Text) == 0 {
 		var output = friendmodels.GetRecipientsOutput{
@@ -45,8 +34,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 
 		return output
 	}
-
-	// 5
 	var users []domain.UserDomain
 	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Sender)
 	if len(users) == 0 {
@@ -56,12 +43,7 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 			[]string{}}
 		return output
 	}
-
-	// Return data
 	var currentUser = users[0]
-
-	//if len(matchEmails) > 0 {
-
 	// Blocked Users
 	var blockedIds []int
 	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", currentUser.Id, constants.Blocked)
@@ -75,8 +57,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 		var rune = []rune(blockUserIdsParam)
 		blockUserIdsParam = string(rune[1:])
 	}
-
-
 	// toUserIds
 	var query = "Select ToUserID From User_Friend Where FromUserID=?"
 	if len(blockUserIdsParam) > 0 {
@@ -84,7 +64,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 	}
 	var toFriendUserIds []int
 	_,  _ = persistence.DbContext.Select(&toFriendUserIds, query, currentUser.Id)
-
 	// fromUserIds
 	query = "Select FromUserID From User_Friend Where ToUserID=?"
 	if len(blockUserIdsParam) > 0 {
@@ -92,11 +71,9 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 	}
 	var fromFriendUserIds []int
 	_,  _ = persistence.DbContext.Select(&fromFriendUserIds, query, currentUser.Id)
-
 	// subscribeUserIds
 	var subscribeUserIds []int
 	_,  _ = persistence.DbContext.Select(&subscribeUserIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", currentUser.Id, constants.Subscribed)
-
 	// Extract Emails from Text
 	var matchEmails = helper.ExtractEmails(input.Text)
 	var matchedUserIds = []int{}
@@ -114,15 +91,12 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 		if len(blockUserIdsParam) > 0 {
 			query = fmt.Sprintf("%s And Id Not In (%s)", query, blockUserIdsParam)
 		}
-
 		_,  _ = persistence.DbContext.Select(&matchedUserIds,query)
 	}
-
 	var notifyUserIds = []int{}
 	notifyUserIds = append(toFriendUserIds, fromFriendUserIds...)
 	notifyUserIds = append(notifyUserIds, subscribeUserIds...)
 	notifyUserIds = append(notifyUserIds, matchedUserIds...)
-
 	var emails = []string {}
 	if len(notifyUserIds) > 0 {
 		param := ""
@@ -135,7 +109,6 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 		query = fmt.Sprintf("Select Username From User Where Id In (%s)", param)
 		_,  _ = persistence.DbContext.Select(&emails,query)
 	}
-
 	output := friendmodels.GetRecipientsOutput{apimodels.ApiResult{true,  []string {}},emails}
 	return output
 }
