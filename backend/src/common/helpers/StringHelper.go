@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"math/rand"
 	"regexp"
 )
 
@@ -29,5 +30,14 @@ func AddItemToArray(arraySrc []string, item string) []string {
 		},
 	}.Do()
 	return arraySrc
+}
+
+func RandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
