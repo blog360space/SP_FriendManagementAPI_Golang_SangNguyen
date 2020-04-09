@@ -9,14 +9,6 @@ import (
 
 func RegisterUserCommand (input usermodels.RegisterUserInput) usermodels.RegisterUserOutput {
 
-	// 1
-	if helper.IsNull(input) {
-		var output usermodels.RegisterUserOutput
-		output.Success = false
-		output.Msgs = []string{"Input isn't null"}
-		return output
-	}
-
 	// 2
 	if len(input.Username) == 0 {
 		var output usermodels.RegisterUserOutput

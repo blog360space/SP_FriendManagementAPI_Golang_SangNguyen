@@ -14,12 +14,6 @@ import (
 
 func MakeFriendCommand (input friendmodels.MakeFriendInput) friendmodels.MakeFriendOutput{
 
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.MakeFriendOutput{apimodels.ApiResult{false, []string {"Input isn't null"}}}
-		return output
-	}
-
 	// 2
 	if helper.IsNull(input.Friends) || len(input.Friends) < 2 {
 		var output = friendmodels.MakeFriendOutput{apimodels.ApiResult{false, []string {"Input isn't valid"}}}
@@ -73,7 +67,7 @@ func MakeFriendCommand (input friendmodels.MakeFriendInput) friendmodels.MakeFri
 
 	if len(userfriends) > 0 {
 		var msg = fmt.Sprintf("%s and %s are existed connection", input.Friends[0], input.Friends[1])
-		output.Success = true
+		output.Success = false
 		output.Msgs = helper.AddItemToArray(output.Msgs, msg)
 		return output
 	}
