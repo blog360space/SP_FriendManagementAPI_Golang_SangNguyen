@@ -1,12 +1,13 @@
 package friend
 
+import "spapp/src/models/apimodels"
+
 type GetRecipientsInput struct {
 	Sender string `json:"sender"`
 	Text string `json:"text"`
 }
 
 type GetRecipientsOutput struct {
-	Success bool `json:"success"`
-	Msgs []string `json:"msgs"`
+	apimodels.ApiResult
 	Recipients []string `json:"recipients"`
 }

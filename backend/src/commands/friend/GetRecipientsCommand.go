@@ -2,66 +2,59 @@ package friend
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"spapp/src/common/constants"
 	helper "spapp/src/common/helpers"
-	apimodels "spapp/src/models/apimodels/friend"
+	"spapp/src/models/apimodels"
+	friendmodels "spapp/src/models/apimodels/friend"
 	"spapp/src/models/domain"
 	"spapp/src/persistence"
 	"strconv"
 )
 
-// Get Recipients docs
-// @Summary Get Recipients
-// @Description As a user, I need an API to retrieve all email addresses that can receive updates from an email address.
-// @Tags Friend
-// @Accept  json
-// @Produce  json
-// @Param input body friend.GetRecipientsInput true "Input"
-// @Success 201 {object} friend.GetRecipientsOutput
-// @Failure 400 {object} friend.GetRecipientsOutput
-// @Router /friend/get-recipients [post]
-func GetRecipientsCommand(context *gin.Context) {
-	var input apimodels.GetRecipientsInput
-	var err error
+func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.GetRecipientsOutput {
 
 	// 1
-	if err = context.BindJSON(&input) ; err != nil {
-		var output = &apimodels.GetRecipientsOutput{false, []string {"Input isn't null"}, []string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+	if helper.IsNull(input) {
+		var output = friendmodels.GetRecipientsOutput{
+			apimodels.ApiResult{false, []string {"Input isn't null"}},
+			[]string{}}
+		return output
 	}
 
 	// 2
 	if len(input.Sender) == 0 {
-		var output = &apimodels.GetRecipientsOutput{false, []string {"Sender isn't null or empty"}, []string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.GetRecipientsOutput{
+			apimodels.ApiResult{ false, []string {"Sender isn't null or empty"}},
+			[]string{}}
+		return output
 	}
 
 	// 3
 	if !helper.IsEmail(input.Sender) {
-		var output = &apimodels.GetRecipientsOutput{false, []string {"Sender isn't valid email address"}, []string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.GetRecipientsOutput{
+			apimodels.ApiResult{false, []string {"Sender isn't valid email address"}},
+			[]string{}}
+		return output
 	}
 
 	// 4
 	if len(input.Text) == 0 {
-		var output = &apimodels.GetRecipientsOutput{false, []string {"Text isn't null or empty"}, []string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.GetRecipientsOutput{
+			apimodels.ApiResult{false, []string {"Text isn't null or empty"}},
+			[]string{}}
+
+		return output
 	}
 
 	// 5
 	var users []domain.UserDomain
-	_, err = persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Sender)
+	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username=?", input.Sender)
 	if len(users) == 0 {
 		var msg = fmt.Sprintf("%s isn't registered", input.Sender)
-		var output = &apimodels.GetRecipientsOutput{false,  []string {msg},[]string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.GetRecipientsOutput{
+			apimodels.ApiResult{false,  []string {msg}},
+			[]string{}}
+		return output
 	}
 
 	// Return data
@@ -71,7 +64,7 @@ func GetRecipientsCommand(context *gin.Context) {
 
 	// Blocked Users
 	var blockedIds []int
-	_,  err = persistence.DbContext.Select(&blockedIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", currentUser.Id, constants.Blocked)
+	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", currentUser.Id, constants.Blocked)
 
 	var blockUserIdsParam = ""
 	if len(blockedIds) > 0 {
@@ -90,7 +83,7 @@ func GetRecipientsCommand(context *gin.Context) {
 		query = fmt.Sprintf("%s And ToUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var toFriendUserIds []int
-	_,  err = persistence.DbContext.Select(&toFriendUserIds, query, currentUser.Id)
+	_,  _ = persistence.DbContext.Select(&toFriendUserIds, query, currentUser.Id)
 
 	// fromUserIds
 	query = "Select FromUserID From User_Friend Where ToUserID=?"
@@ -98,11 +91,11 @@ func GetRecipientsCommand(context *gin.Context) {
 		query = fmt.Sprintf("%s And FromUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var fromFriendUserIds []int
-	_,  err = persistence.DbContext.Select(&fromFriendUserIds, query, currentUser.Id)
+	_,  _ = persistence.DbContext.Select(&fromFriendUserIds, query, currentUser.Id)
 
 	// subscribeUserIds
 	var subscribeUserIds []int
-	_,  err = persistence.DbContext.Select(&subscribeUserIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", currentUser.Id, constants.Subscribed)
+	_,  _ = persistence.DbContext.Select(&subscribeUserIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", currentUser.Id, constants.Subscribed)
 
 	// Extract Emails from Text
 	var matchEmails = helper.ExtractEmails(input.Text)
@@ -122,7 +115,7 @@ func GetRecipientsCommand(context *gin.Context) {
 			query = fmt.Sprintf("%s And Id Not In (%s)", query, blockUserIdsParam)
 		}
 
-		_,  err = persistence.DbContext.Select(&matchedUserIds,query)
+		_,  _ = persistence.DbContext.Select(&matchedUserIds,query)
 	}
 
 	var notifyUserIds = []int{}
@@ -140,9 +133,9 @@ func GetRecipientsCommand(context *gin.Context) {
 		var rune = []rune(param)
 		param = string(rune[1:])
 		query = fmt.Sprintf("Select Username From User Where Id In (%s)", param)
-		_,  err = persistence.DbContext.Select(&emails,query)
+		_,  _ = persistence.DbContext.Select(&emails,query)
 	}
 
-	output := &apimodels.GetRecipientsOutput{true,  []string {},emails}
-	context.JSON(http.StatusOK, output)
+	output := friendmodels.GetRecipientsOutput{apimodels.ApiResult{true,  []string {}},emails}
+	return output
 }

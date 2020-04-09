@@ -2,46 +2,33 @@ package friend
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"spapp/src/models/apimodels"
 
-	apimodels "spapp/src/models/apimodels/friend"
 	helper "spapp/src/common/helpers"
+	friendmodels "spapp/src/models/apimodels/friend"
 
 	"spapp/src/models/domain"
 	"spapp/src/persistence"
 )
-// Make Friend docs
-// @Summary Make Friend
-// @Description As a user, I need an API to create a friend connection between two email addresses
-// @Tags Friend
-// @Accept  json
-// @Produce  json
-// @Param input body friend.MakeFriendInput true "Input"
-// @Success 201 {object} friend.MakeFriendOutput
-// @Failure 400 {object} friend.MakeFriendOutput
-// @Router /friend/make-friend [post]
-func MakeFriendCommand (context * gin.Context){
-	var input apimodels.MakeFriendInput
-	var err error
+
+
+func MakeFriendCommand (input friendmodels.MakeFriendInput) friendmodels.MakeFriendOutput{
 
 	// 1
-	if err = context.BindJSON(&input) ; err != nil {
-		var output = &apimodels.MakeFriendOutput{false, []string {"Input isn't null"}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+	if helper.IsNull(input) {
+		var output = friendmodels.MakeFriendOutput{apimodels.ApiResult{false, []string {"Input isn't null"}}}
+		return output
 	}
 
 	// 2
 	if helper.IsNull(input.Friends) || len(input.Friends) < 2 {
-		var output = &apimodels.MakeFriendOutput{false, []string {"Input isn't valid"} }
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.MakeFriendOutput{apimodels.ApiResult{false, []string {"Input isn't valid"}}}
+		return output
 	}
 
 	// 3
 	var count = len(input.Friends)
-	var output = &apimodels.MakeFriendOutput{true, []string {}}
+	var output = friendmodels.MakeFriendOutput{apimodels.ApiResult{true, []string {}}}
 	for i := 0; i < count; i++ {
 		if !helper.IsEmail(input.Friends[i]) {
 			output.Success = false
@@ -50,13 +37,19 @@ func MakeFriendCommand (context * gin.Context){
 		}
 	}
 	if output.Success == false {
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
 	// 4
+	if input.Friends[0] == input.Friends[1] {
+		output.Success = false
+		output.Msgs = helper.AddItemToArray(output.Msgs, "Emails are the same")
+		return output
+	}
+
+	// 5
 	var users []domain.UserDomain
-	_, err = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
+	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
 	for i := range input.Friends {
 		var flag = true
 		for j := range users {
@@ -71,24 +64,22 @@ func MakeFriendCommand (context * gin.Context){
 		}
 	}
 	if output.Success == false {
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
-	// 5
+	// 6
 	var userfriends []domain.UserFriendDomain
-	_, err = persistence.DbContext.Select(&userfriends,"Select Id, FromUserID, ToUserID From User_Friend Where (FromUserID=? And ToUserID=?) Or (FromUserID=? And ToUserID=?)", users[0].Id, users[1].Id, users[1].Id, users[0].Id)
+	_, _ = persistence.DbContext.Select(&userfriends,"Select Id, FromUserID, ToUserID From User_Friend Where (FromUserID=? And ToUserID=?) Or (FromUserID=? And ToUserID=?)", users[0].Id, users[1].Id, users[1].Id, users[0].Id)
 
 	if len(userfriends) > 0 {
 		var msg = fmt.Sprintf("%s and %s are existed connection", input.Friends[0], input.Friends[1])
 		output.Success = true
 		output.Msgs = helper.AddItemToArray(output.Msgs, msg)
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
 	userfriend := &domain.UserFriendDomain{0, users[0].Id, users[1].Id}
 	persistence.DbContext.Insert(userfriend)
 
-	context.JSON(http.StatusCreated, output)
+	return output
 }

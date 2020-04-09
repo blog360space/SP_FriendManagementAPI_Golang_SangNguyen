@@ -2,50 +2,43 @@ package friend
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"spapp/src/common/constants"
+	"spapp/src/models/apimodels"
 	"strconv"
 
-	apimodels "spapp/src/models/apimodels/friend"
 	helper "spapp/src/common/helpers"
+	friendmodels "spapp/src/models/apimodels/friend"
 
 	"spapp/src/models/domain"
 	"spapp/src/persistence"
 )
 
-
-// Get Common Friends docs
-// @Summary Get Common Friends
-// @Description As a user, I need an API to retrieve the common friends list between two email addresses.
-// @Tags Friend
-// @Accept  json
-// @Produce  json
-// @Param input body friend.GetCommonFriendsInput true "Input"
-// @Success 201 {object} friend.GetCommonFriendsOutput
-// @Failure 400 {object} friend.GetCommonFriendsOutput
-// @Router /friend/get-common-friends [post]
-func GetCommonFriendsCommand(context *gin.Context) {
-	var input apimodels.GetCommonFriendsInput
-	var err error
+func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmodels.GetCommonFriendsOutput {
 
 	// 1
-	if err = context.BindJSON(&input) ; err != nil {
-		var output = &apimodels.GetCommonFriendsOutput{false, []string {"Input isn't null"},0, []string{}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+	if helper.IsNull(input) {
+		var output = friendmodels.GetCommonFriendsOutput{
+			apimodels.ApiResult{false, []string {"Input isn't null"}},
+			0,
+			[]string{}}
+		return output
 	}
 
 	// 2
 	if helper.IsNull(input.Friends) || len(input.Friends) < 2 {
-		var output = &apimodels.GetCommonFriendsOutput{false, []string {"Input isn't valid"},0, []string{} }
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.GetCommonFriendsOutput{
+			apimodels.ApiResult{false, []string {"Input isn't valid"}},
+			0,
+			[]string{} }
+		return output
 	}
 
 	// 3
 	var count = len(input.Friends)
-	var output = &apimodels.GetCommonFriendsOutput{true, []string {},0, []string{}}
+	var output = friendmodels.GetCommonFriendsOutput{
+		apimodels.ApiResult{true, []string {}},
+		0,
+		[]string{}}
 	for i := 0; i < count; i++ {
 		if !helper.IsEmail(input.Friends[i]) {
 			output.Success = false
@@ -54,13 +47,19 @@ func GetCommonFriendsCommand(context *gin.Context) {
 		}
 	}
 	if output.Success == false {
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
 	// 4
+	if input.Friends[0] == input.Friends[1] {
+		output.Success = false
+		output.Msgs = helper.AddItemToArray(output.Msgs, "Emails are the same")
+		return output
+	}
+
+	// 5
 	var users []domain.UserDomain
-	_, err = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
+	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
 	for i := range input.Friends {
 		var flag = true
 		for j := range users {
@@ -75,8 +74,7 @@ func GetCommonFriendsCommand(context *gin.Context) {
 		}
 	}
 	if output.Success == false {
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
 
@@ -85,7 +83,7 @@ func GetCommonFriendsCommand(context *gin.Context) {
 
 	// Blocked Users From User 1
 	var blockedIds []int
-	_,  err = persistence.DbContext.Select(&blockedIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", user1.Id, constants.Blocked)
+	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", user1.Id, constants.Blocked)
 	var blockUserIdsParam = ""
 	if len(blockedIds) > 0 {
 		for i := range blockedIds {
@@ -100,19 +98,19 @@ func GetCommonFriendsCommand(context *gin.Context) {
 		query = fmt.Sprintf("%s And ToUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var toUserIds1 []int
-	_, err = persistence.DbContext.Select(&toUserIds1, query, user1.Id, user2.Id)
+	_, _ = persistence.DbContext.Select(&toUserIds1, query, user1.Id, user2.Id)
 
 	query = "Select FromUserID From User_Friend Where ToUserID = ? And FromUserID != ?"
 	if len(blockUserIdsParam) > 0 {
 		query = fmt.Sprintf("%s And FromUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var fromUserIds1 []int
-	_, err = persistence.DbContext.Select(&fromUserIds1,query, user1.Id, user2.Id)
+	_, _ = persistence.DbContext.Select(&fromUserIds1,query, user1.Id, user2.Id)
 
 	var userIds1 = append(fromUserIds1, toUserIds1...)
 
 	// Blocked Users From User 2
-	_,  err = persistence.DbContext.Select(&blockedIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", user2.Id, constants.Blocked)
+	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", user2.Id, constants.Blocked)
 	blockUserIdsParam = ""
 	if len(blockedIds) > 0 {
 		for i := range blockedIds {
@@ -127,14 +125,14 @@ func GetCommonFriendsCommand(context *gin.Context) {
 		query = fmt.Sprintf("%s And ToUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var toUserIds2 []int
-	_, err = persistence.DbContext.Select(&toUserIds2, query, user2.Id, user1.Id)
+	_, _ = persistence.DbContext.Select(&toUserIds2, query, user2.Id, user1.Id)
 
 	query = "Select FromUserID From User_Friend Where ToUserID = ? And FromUserID != ?"
 	if len(blockUserIdsParam) > 0 {
 		query = fmt.Sprintf("%s And FromUserID Not In (%s)", query, blockUserIdsParam)
 	}
 	var fromUserIds2 []int
-	_, err = persistence.DbContext.Select(&fromUserIds2,query, user2.Id, user1.Id)
+	_, _ = persistence.DbContext.Select(&fromUserIds2,query, user2.Id, user1.Id)
 
 	var userIds2 = append(fromUserIds2, toUserIds2...)
 
@@ -154,9 +152,12 @@ func GetCommonFriendsCommand(context *gin.Context) {
 		query := fmt.Sprintf("Select Username From User Where Id In (%s)", params)
 
 
-		_,  err = persistence.DbContext.Select(&emails,query)
-		output = &apimodels.GetCommonFriendsOutput{true, []string {}, len(emails), emails}
+		_,  _ = persistence.DbContext.Select(&emails,query)
+		output = friendmodels.GetCommonFriendsOutput{
+			apimodels.ApiResult{true, []string {}},
+			len(emails),
+			emails}
 	}
 
-	context.JSON(http.StatusOK, output)
+	return output
 }

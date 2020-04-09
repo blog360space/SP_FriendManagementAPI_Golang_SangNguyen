@@ -1,64 +1,53 @@
 package friend
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"reflect"
 	"fmt"
+	"reflect"
 	"spapp/src/common/constants"
+	"spapp/src/models/apimodels"
 
 	helper "spapp/src/common/helpers"
-	apimodels "spapp/src/models/apimodels/friend"
+	friendmodels "spapp/src/models/apimodels/friend"
 	"spapp/src/models/domain"
 	"spapp/src/persistence"
 )
 
-// Subscribe an User docs
-// @Summary Subscribe an User
-// @Description As a user, I need an API to subscribe to updates from an email address.
-// @Tags Friend
-// @Accept  json
-// @Produce  json
-// @Param input body friend.SubscribeUserInput true "Input"
-// @Success 201 {object} friend.SubscribeUserOutput
-// @Failure 400 {object} friend.SubscribeUserOutput
-// @Router /friend/subscribe-user [post]
-func SubscribeUserCommand(context *gin.Context)  {
-	var input apimodels.SubscribeUserInput
-	var err error
+func SubscribeUserCommand(input friendmodels.SubscribeUserInput)  friendmodels.SubscribeUserOutput {
 
 	// 1
-	if err = context.BindJSON(&input) ; err != nil {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Input isn't null"}}
-		context.JSON(http.StatusBadRequest, output)
-		return
+	if helper.IsNull(input) {
+		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Input isn't null"}}}
+		return output
 	}
 
 	// 2
 	if len(input.Requestor) == 0 || len(input.Target) == 0 {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Input isn't valid"} }
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Input isn't valid"}}}
+		return output
 	}
 
 	// 3
 	if !helper.IsEmail(input.Requestor) {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Requestor isn't valid email address"} }
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Requestor isn't valid email address"}}}
+		return output
 	}
 
 	// 4
 	if !helper.IsEmail(input.Target) {
-		var output = &apimodels.SubscribeUserOutput{false, []string {"Target isn't valid email address"} }
-		context.JSON(http.StatusBadRequest, output)
-		return
+		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Target isn't valid email address"}}}
+		return output
 	}
 
 	// 5
-	var output = &apimodels.SubscribeUserOutput{true, []string {}}
+	if input.Requestor == input.Target {
+		var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{false, []string {"Requestor and Target are the same"}}}
+		return output
+	}
+
+	// 6
+	var output = friendmodels.SubscribeUserOutput{apimodels.ApiResult{true, []string {}}}
 	var users []domain.UserDomain
-	_, err = persistence.DbContext.Select(&users,"Select Id, Username From User Where Username=? Or Username=?", input.Requestor, input.Target)
+	_, _ = persistence.DbContext.Select(&users,"Select Id, Username From User Where Username=? Or Username=?", input.Requestor, input.Target)
 
 	if len(users) != 2 {
 		v := reflect.ValueOf(input)
@@ -77,11 +66,10 @@ func SubscribeUserCommand(context *gin.Context)  {
 				output.Msgs = helper.AddItemToArray(output.Msgs, msg)
 			}
 		}
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
-	// 6
+	// 7
 	index := helper.ArrayIndex(len(users), func(i int) bool {
 		return users[i].Username == input.Requestor
 	})
@@ -92,7 +80,7 @@ func SubscribeUserCommand(context *gin.Context)  {
 	var target = users[index]
 
 	var subscribeUsers []domain.SubscribeUserDomain
-	_, err = persistence.DbContext.Select(&subscribeUsers, "Select Id, Requestor, Target, Status From Subscribe_User Where Requestor=? And Target=?", requestor.Id, target.Id)
+	_, _ = persistence.DbContext.Select(&subscribeUsers, "Select Id, Requestor, Target, Status From Subscribe_User Where Requestor=? And Target=?", requestor.Id, target.Id)
 
 	if len(subscribeUsers) > 0 {
 		subscribeUser := subscribeUsers[0]
@@ -109,12 +97,12 @@ func SubscribeUserCommand(context *gin.Context)  {
 			output.Msgs = helper.AddItemToArray(output.Msgs, msg)
 		}
 
-		context.JSON(http.StatusBadRequest, output)
-		return
+		return output
 	}
 
 	// Return Data
 	subscribeUser:= &domain.SubscribeUserDomain{0, requestor.Id, target.Id, constants.Subscribed}
 	persistence.DbContext.Insert(subscribeUser)
-	context.JSON(http.StatusOK, output)
+
+	return output
 }

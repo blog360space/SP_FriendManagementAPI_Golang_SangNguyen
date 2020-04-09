@@ -30,6 +30,12 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/friend.BlockUserOutput"
+                        }
+                    },
                     "201": {
                         "description": "Created",
                         "schema": {
@@ -70,8 +76,8 @@
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/friend.GetCommonFriendsOutput"
                         }
@@ -110,8 +116,8 @@
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/friend.GetFriendsOutput"
                         }
@@ -150,8 +156,8 @@
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/friend.GetRecipientsOutput"
                         }
@@ -190,6 +196,12 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/friend.MakeFriendOutput"
+                        }
+                    },
                     "201": {
                         "description": "Created",
                         "schema": {
@@ -230,6 +242,12 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/friend.SubscribeUserOutput"
+                        }
+                    },
                     "201": {
                         "description": "Created",
                         "schema": {

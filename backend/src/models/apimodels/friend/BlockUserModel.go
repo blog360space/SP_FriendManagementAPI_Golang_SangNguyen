@@ -1,5 +1,6 @@
 package friend
 
+import "spapp/src/models/apimodels"
 
 type BlockUserInput struct {
 	Requestor string `json:"requestor"`
@@ -7,6 +8,5 @@ type BlockUserInput struct {
 }
 
 type BlockUserOutput struct {
-	Success bool `json:"success"`
-	Msgs []string `json:"msgs"`
+	apimodels.ApiResult
 }

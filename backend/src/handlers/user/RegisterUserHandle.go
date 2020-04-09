@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"net/http"
 
 	helper "spapp/src/common/helpers"
@@ -21,7 +20,7 @@ import (
 // @Success 201 {object} user.RegisterUserOutput
 // @Failure 400 {object} user.RegisterUserOutput
 // @Router /user/register-user [post]
-func RegisterUserCommand (context * gin.Context){
+func RegisterUserHandle (context * gin.Context){
 	var input apimodels.RegisterUserInput
 	var err error
 	// 1
