@@ -58,8 +58,6 @@ http://localhost:8080/swagger/index.html
 
 ## Unit Testing
 
-A simple MSTest project to help demonstrate how to do unit using .NET Core
-
 ### Prerequisite
 
 ```
@@ -69,17 +67,17 @@ docker-compose -f docker-compose.testing.yml up
 
 ### How to run
 
-Run them directly from Visual Studio.
+Run them directly from GoLand.
 
 Or from the terminal, in the solution root, simply run:
 
 ```
+# Go to Friend Commands folder
+cd backend/src/commands/friend
+
 # Run all tests
-dotnet test
+go test
 
-# Run all tests  with coverage
-dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
-
-# Run method. Ex: Register_Ok
-dotnet test --filter Register_Ok
+# Run all tests with coverage
+go test -cover
 ```
