@@ -37,7 +37,6 @@ func Test_RegisterUser_Ok(t *testing.T) {
 	initConfig()
 	var users = getAllUsers()
 	var username = fmt.Sprintf("%s_%s@%s.com", helper.RandomString(8),strconv.Itoa(len(users)), helper.RandomString(4))
-	log.Printf(username)
 	var input = usermodels.RegisterUserInput{
 		username,
 	}

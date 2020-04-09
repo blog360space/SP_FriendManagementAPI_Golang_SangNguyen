@@ -16,16 +16,6 @@ import (
 
 func GetFriendsCommand (input friendmodels.GetFriendsInput) friendmodels.GetFriendsOutput{
 
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.GetFriendsOutput{
-			apimodels.ApiResult{false, []string {"Input isn't null"}},
-			0,
-			[]string{}}
-
-		return output
-	}
-
 	// 2
 	if len(input.Email) == 0 {
 		var output = friendmodels.GetFriendsOutput{
