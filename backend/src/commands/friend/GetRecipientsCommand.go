@@ -95,7 +95,7 @@ func GetRecipientsCommand(input friendmodels.GetRecipientsInput) friendmodels.Ge
 
 	// subscribeUserIds
 	var subscribeUserIds []int
-	_,  _ = persistence.DbContext.Select(&subscribeUserIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", currentUser.Id, constants.Subscribed)
+	_,  _ = persistence.DbContext.Select(&subscribeUserIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", currentUser.Id, constants.Subscribed)
 
 	// Extract Emails from Text
 	var matchEmails = helper.ExtractEmails(input.Text)
