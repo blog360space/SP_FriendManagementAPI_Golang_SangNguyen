@@ -15,15 +15,6 @@ import (
 
 func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmodels.GetCommonFriendsOutput {
 
-	// 1
-	if helper.IsNull(input) {
-		var output = friendmodels.GetCommonFriendsOutput{
-			apimodels.ApiResult{false, []string {"Input isn't null"}},
-			0,
-			[]string{}}
-		return output
-	}
-
 	// 2
 	if helper.IsNull(input.Friends) || len(input.Friends) < 2 {
 		var output = friendmodels.GetCommonFriendsOutput{
@@ -83,7 +74,7 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 
 	// Blocked Users From User 1
 	var blockedIds []int
-	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", user1.Id, constants.Blocked)
+	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Target  From Subscribe_User Where Requestor = ? And Status=?", user1.Id, constants.Blocked)
 	var blockUserIdsParam = ""
 	if len(blockedIds) > 0 {
 		for i := range blockedIds {
@@ -110,7 +101,7 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 	var userIds1 = append(fromUserIds1, toUserIds1...)
 
 	// Blocked Users From User 2
-	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Requestor From Subscribe_User Where Target = ? And Status=?", user2.Id, constants.Blocked)
+	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Target From Subscribe_User Where Requestor = ? And Status=?", user2.Id, constants.Blocked)
 	blockUserIdsParam = ""
 	if len(blockedIds) > 0 {
 		for i := range blockedIds {
