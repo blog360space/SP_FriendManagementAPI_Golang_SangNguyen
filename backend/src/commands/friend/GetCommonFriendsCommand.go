@@ -14,7 +14,6 @@ import (
 )
 
 func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmodels.GetCommonFriendsOutput {
-
 	// 2
 	if helper.IsNull(input.Friends) || len(input.Friends) < 2 {
 		var output = friendmodels.GetCommonFriendsOutput{
@@ -23,7 +22,6 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 			[]string{} }
 		return output
 	}
-
 	// 3
 	var count = len(input.Friends)
 	var output = friendmodels.GetCommonFriendsOutput{
@@ -40,14 +38,12 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 	if output.Success == false {
 		return output
 	}
-
 	// 4
 	if input.Friends[0] == input.Friends[1] {
 		output.Success = false
 		output.Msgs = helper.AddItemToArray(output.Msgs, "Emails are the same")
 		return output
 	}
-
 	// 5
 	var users []domain.UserDomain
 	_, _ = persistence.DbContext.Select(&users, "select Id, Username From User Where Username In (?,?)", input.Friends[0], input.Friends[1])
@@ -67,11 +63,8 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 	if output.Success == false {
 		return output
 	}
-
-
 	var user1 = users[0]
 	var user2 = users[1]
-
 	// Blocked Users From User 1
 	var blockedIds []int
 	_,  _ = persistence.DbContext.Select(&blockedIds,"Select Target  From Subscribe_User Where Requestor = ? And Status=?", user1.Id, constants.Blocked)
@@ -149,6 +142,5 @@ func GetCommonFriendsCommand(input friendmodels.GetCommonFriendsInput) friendmod
 			len(emails),
 			emails}
 	}
-
 	return output
 }
